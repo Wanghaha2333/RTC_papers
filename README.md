@@ -17,3 +17,5 @@ Conferences include: SIGCOMM, NSDI, Mobicom, CoNEXT, MobiSys, INFOCOM, ACM MM, W
 - Reparo: Loss-Resilient Generative Codec for Video Conferencing [arXiv 2023.05]
 
 - Gemino: Practical and Robust Neural Compression for Video Conferencing [NSDI 2024]
+
+- Hairpin: Rethinking Packet Loss Recovery in Edge-based Interactive Video Streaming [NSDI 2024]
