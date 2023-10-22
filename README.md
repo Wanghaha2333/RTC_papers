@@ -22,3 +22,17 @@ Conferences include: SIGCOMM, NSDI, Mobicom, CoNEXT, MobiSys, INFOCOM, ACM MM, W
 
 - Nebula: Reliable Low-latency Video Transmission for Mobile Cloud Gaming [WWW 2022]
 
+- Converge: QoE-driven Multipath Video Conferencing over WebRTC [SIGCOMM 2023]
+
+- Enabling High Quality Real-Time Communications with Adaptive Frame-Rate [NSDI 2023]
+
+
+Some works in video analytics might also be helpful:
+
+# Video Analytics
+
+- RECL: Responsive Resource-Efficient Continuous Learning for Video Analytics [NSDI 2023]
+
+- Boggart: Towards General-Purpose Acceleration of Retrospective Video Analytics [NSDI 2023]
+
+- Gemel: Model Merging for Memory-Efficient, Real-Time Video Analytics at the Edge [NSDI 2023]
