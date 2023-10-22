@@ -19,3 +19,6 @@ Conferences include: SIGCOMM, NSDI, Mobicom, CoNEXT, MobiSys, INFOCOM, ACM MM, W
 - Gemino: Practical and Robust Neural Compression for Video Conferencing [NSDI 2024]
 
 - Hairpin: Rethinking Packet Loss Recovery in Edge-based Interactive Video Streaming [NSDI 2024]
+
+- Nebula: Reliable Low-latency Video Transmission for Mobile Cloud Gaming [WWW 2022]
+
