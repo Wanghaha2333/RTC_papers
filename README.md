@@ -1,5 +1,7 @@
 # RTC_papers after 2022
 
+The owner's research interest mainly lies in the application layer perspective in webrtc live video delivery.
+
 Here is a repository for the paper list of WebRTC live video streaming after 2022.
 
 Conferences include: SIGCOMM, NSDI, Mobicom, CoNEXT, MobiSys, INFOCOM, ACM MM, WWW
@@ -40,8 +42,18 @@ Conferences include: SIGCOMM, NSDI, Mobicom, CoNEXT, MobiSys, INFOCOM, ACM MM, W
 
 - NeuroScaler: neural video enhancement at scale [SIGCOMM 2022]
 
+- Salsify: Low-Latency Network Video through Tighter Integration between a Video Codec and a Transport Protocol [NSDI 2018]
 
-Some works in video analytics might also be helpful:
+# Other works about live video streaming (like DASH-based or non-interactive):
+
+- Vantage: optimizing video upload for time-shifted viewing of social live streams [SIGCOMM 2019]
+
+- Prism: Handling Packet Loss for Ultra-low Latency Video [ACM MM 2022]
+
+- Rldish: Rldish: Edge-assisted qoe optimization of http live streaming with reinforcement learning [INFOCOM 2020]
+
+
+**Some works in video analytics might also be helpful:(these lists are not complete since they are not the main concern)**
 
 # Video Analytics
 
@@ -53,4 +65,10 @@ Some works in video analytics might also be helpful:
 
 - Ekya: Continuous Learning of Video Analytics Models on Edge Compute Servers [NSDI 2022]
 
-- 
+- Reducto: On-camera filtering for resource-efficient real-time video analytics [SIGCOMM 2020]
+
+- DDS: Server-driven video streaming for deep learning inference [SIGCOMM 2020]
+
+- Accmpeg: Optimizing video encoding for video analytics [MLSys 2022]
+
+- Casva: Configuration-adaptive streaming for live video analytics [INFOCOM 2022]
