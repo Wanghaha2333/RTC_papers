@@ -1,6 +1,6 @@
 # RTC_papers after 2022
 
-The owner's research interest mainly lies in the application layer perspective in webrtc live video delivery. The following reading notes will be released here and on Zhihu.
+The owner's research interest mainly lies in the application layer perspective in webrtc live video delivery. The following reading notes (Chinese Version) will be released here and on Zhihu.
 
 Here is a repository for the paper list of WebRTC live video streaming after 2022.
 
