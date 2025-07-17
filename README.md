@@ -1,74 +1,103 @@
-# RTC_papers after 2022
+# 视频变化检测脚本
 
-The owner's research interest mainly lies in the application layer perspective in webrtc live video delivery. The following reading notes (Chinese Version) will be released here and on Zhihu.
+专为大规模批量处理设计的高效视频变化检测工具，能快速判断视频前4秒（第0、1、2、3秒）是否完全没有变化。
 
-Here is a repository for the paper list of WebRTC live video streaming after 2022.
+## 🚀 特点
 
-Conferences include: SIGCOMM, NSDI, Mobicom, CoNEXT, MobiSys, INFOCOM, ACM MM, WWW, ...
+- **极速处理**: 针对5万个视频优化，使用感知哈希算法
+- **多进程并行**: 充分利用多核CPU
+- **内存优化**: 低内存占用，适合大批量处理
+- **易于使用**: 提供命令行界面和批处理脚本
+- **双版本选择**: 极速版本和精确版本
 
-- R-FEC: RL-based FEC Adjustment for Better QoE in WebRTC [ACM MM 2022]
+## 📦 文件结构
 
-- Tambur: Efficient loss recovery for videoconferencing via streaming codes [NSDI 2023]
+```
+├── fast_video_detector.py      # 极速版本（推荐）
+├── video_change_detector.py    # 精确版本
+├── batch_process.sh            # 批处理脚本
+├── requirements.txt            # 依赖文件
+├── 使用说明.md                 # 详细使用说明
+└── README.md                   # 本文件
+```
 
-- GRACE: Loss-Resilient Real-Time Video through Neural Codecs [arXiv 2023.05]
+## 🛠️ 快速开始
 
-- RTCSR: Zero-latency Aware Super-resolution for WebRTC Mobile Video Streaming [SIGCOMM EMS 2023]
+### 1. 安装依赖
 
-- Optimizing Real-Time Video Experience with Data Scalable Codec [SIGCOMM EMS 2023]
+```bash
+pip install -r requirements.txt
+```
 
-- Reparo: Loss-Resilient Generative Codec for Video Conferencing [arXiv 2023.05]
+### 2. 处理单个视频
 
-- Gemino: Practical and Robust Neural Compression for Video Conferencing [NSDI 2024]
+```bash
+python3 fast_video_detector.py video.mp4
+```
 
-- Hairpin: Rethinking Packet Loss Recovery in Edge-based Interactive Video Streaming [NSDI 2024]
+### 3. 批量处理目录
 
-- Nebula: Reliable Low-latency Video Transmission for Mobile Cloud Gaming [WWW 2022]
+```bash
+python3 fast_video_detector.py /path/to/videos/ -o results.csv
+```
 
-- Converge: QoE-driven Multipath Video Conferencing over WebRTC [SIGCOMM 2023]
+### 4. 使用批处理脚本
 
-- Enabling High Quality Real-Time Communications with Adaptive Frame-Rate [NSDI 2023]
+```bash
+./batch_process.sh /path/to/videos/ results.csv 8
+```
 
-- REAL-TIME NEURAL VIDEO RECOVERY AND ENHANCEMENT ON MOBILE DEVICES [arXiv 2023.07]
+## ⚡ 性能
 
-# Classical RTC papers before 2022:
+- **处理速度**: 10-50个视频/秒（取决于硬件和视频大小）
+- **内存占用**: 极低，适合大批量处理
+- **预计时间**: 处理5万个视频约20分钟-2小时
 
-- Learning to Coordinate Video Codec with Transport Protocol for Mobile Video Telephony [Mobicom 2019]
+## 📊 输出格式
 
-- OnRL: Improving Mobile Video Telephony via Online Reinforcement Learning [Mobicom 2020] && Improving Mobile Interactive Video QoE Via Two-level Online Cooperative Learning [TMC 2022]
+结果以CSV格式保存：
 
-- Neural-Enhanced Live Streaming: Improving Live Video Ingest via Online Learning (LiveNAS) [SIGCOMM 2020]
+```csv
+视频文件,无变化,详情
+"/path/video1.mp4",True,"无变化"
+"/path/video2.mp4",False,"第2秒有变化"
+```
 
-- Loki: Improving Long Tail Performance of Learning-Based Real-Time Video Adaptation by Fusing Rule-Based Models [Mobicom 2021]
+## 🔧 主要参数
 
-- NeuroScaler: neural video enhancement at scale [SIGCOMM 2022]
+- `-j`: 并行进程数（默认为CPU核心数）
+- `--hash-threshold`: 检测敏感度（默认8，越小越严格）
+- `-o`: 输出文件路径
+- `-q`: 静默模式
 
-- Salsify: Low-Latency Network Video through Tighter Integration between a Video Codec and a Transport Protocol [NSDI 2018]
+## 📖 详细文档
 
-# Other works about live video streaming (like DASH-based or non-interactive):
+查看 [使用说明.md](使用说明.md) 获取完整的使用指南和优化建议。
 
-- Vantage: optimizing video upload for time-shifted viewing of social live streams [SIGCOMM 2019]
+## 🎯 算法原理
 
-- Prism: Handling Packet Loss for Ultra-low Latency Video [ACM MM 2022]
+1. **感知哈希**: 将帧缩放到8x8像素，生成64位哈希值
+2. **汉明距离**: 比较哈希值的位差异
+3. **阈值判断**: 超过阈值认为有变化
 
-- Rldish: Rldish: Edge-assisted qoe optimization of http live streaming with reinforcement learning [INFOCOM 2020]
+## 📝 示例输出
 
+```
+找到 1000 个视频文件
+使用 8 个进程
 
-**Some works in video analytics might also be helpful:(these lists are not complete since they are not the main concern)**
+处理完成!
+总数: 1000
+无变化: 156
+有变化: 844
+用时: 45.67 秒
+速度: 21.9 个/秒
+```
 
-# Video Analytics
+## 🤝 贡献
 
-- RECL: Responsive Resource-Efficient Continuous Learning for Video Analytics [NSDI 2023]
+欢迎提交Issue和Pull Request来改进这个工具！
 
-- Boggart: Towards General-Purpose Acceleration of Retrospective Video Analytics [NSDI 2023]
+## 📄 许可证
 
-- Gemel: Model Merging for Memory-Efficient, Real-Time Video Analytics at the Edge [NSDI 2023]
-
-- Ekya: Continuous Learning of Video Analytics Models on Edge Compute Servers [NSDI 2022]
-
-- Reducto: On-camera filtering for resource-efficient real-time video analytics [SIGCOMM 2020]
-
-- DDS: Server-driven video streaming for deep learning inference [SIGCOMM 2020]
-
-- Accmpeg: Optimizing video encoding for video analytics [MLSys 2022]
-
-- Casva: Configuration-adaptive streaming for live video analytics [INFOCOM 2022]
+MIT License
