@@ -1,21 +1,24 @@
-# 视频变化检测脚本
+# 视频变化检测与筛选工具
 
-专为大规模批量处理设计的高效视频变化检测工具，能快速判断视频前4秒（第0、1、2、3秒）是否完全没有变化。
+专为大规模批量处理设计的高效视频处理工具集，支持解码检测、变化分析和智能筛选复制功能。
 
-## 🚀 特点
+## 🚀 核心功能
 
-- **极速处理**: 针对5万个视频优化，使用感知哈希算法
+- **解码检测**: 自动识别无法正确解码的损坏视频
+- **变化分析**: 快速判断视频前4秒（第0、1、2、3秒）是否有变化
+- **智能筛选**: 自动复制满足条件的视频到新文件夹
+- **批量处理**: 针对5万个视频优化，使用感知哈希算法
 - **多进程并行**: 充分利用多核CPU
 - **内存优化**: 低内存占用，适合大批量处理
-- **易于使用**: 提供命令行界面和批处理脚本
-- **双版本选择**: 极速版本和精确版本
 
 ## 📦 文件结构
 
 ```
-├── fast_video_detector.py      # 极速版本（推荐）
-├── video_change_detector.py    # 精确版本
-├── batch_process.sh            # 批处理脚本
+├── video_filter_copy.py        # 筛选复制脚本（主要功能）
+├── fast_video_detector.py      # 快速分析脚本
+├── video_change_detector.py    # 精确检测脚本
+├── filter_and_copy.sh          # 筛选复制批处理脚本
+├── batch_process.sh            # 分析批处理脚本
 ├── requirements.txt            # 依赖文件
 ├── 使用说明.md                 # 详细使用说明
 └── README.md                   # 本文件
@@ -29,21 +32,30 @@
 pip install -r requirements.txt
 ```
 
-### 2. 处理单个视频
+### 2. 🎯 筛选复制视频（主要功能）
 
 ```bash
-python3 fast_video_detector.py video.mp4
+# 筛选出可解码且有变化的视频到新文件夹
+./filter_and_copy.sh /path/to/input_videos/ /path/to/output_videos/
+
+# 或直接使用Python脚本
+python3 video_filter_copy.py /path/to/input_videos/ /path/to/output_videos/
 ```
 
-### 3. 批量处理目录
+### 3. 📊 快速分析视频
 
 ```bash
-python3 fast_video_detector.py /path/to/videos/ -o results.csv
+# 分析视频状态，生成报告
+python3 fast_video_detector.py /path/to/videos/ -o analysis_results.csv
 ```
 
-### 4. 使用批处理脚本
+### 4. 🔧 使用批处理脚本
 
 ```bash
+# 筛选复制
+./filter_and_copy.sh /path/to/videos/ /path/to/output/ 8
+
+# 快速分析
 ./batch_process.sh /path/to/videos/ results.csv 8
 ```
 
@@ -55,12 +67,18 @@ python3 fast_video_detector.py /path/to/videos/ -o results.csv
 
 ## 📊 输出格式
 
+### 筛选复制模式
+- **输出**: 筛选后的视频文件 + 详细报告
+- **筛选条件**: 可正确解码 + 前4秒有变化
+
+### 分析模式
 结果以CSV格式保存：
 
 ```csv
-视频文件,无变化,详情
-"/path/video1.mp4",True,"无变化"
-"/path/video2.mp4",False,"第2秒有变化"
+视频文件,可解码,有变化,解码信息,变化信息
+"/path/video1.mp4",True,True,"解码正常,时长10.5s,30.0fps","第2秒有变化"
+"/path/video2.mp4",False,False,"无法打开视频文件","跳过检测（无法解码）"
+"/path/video3.mp4",True,False,"解码正常,时长8.2s,25.0fps","前4秒无变化"
 ```
 
 ## 🔧 主要参数

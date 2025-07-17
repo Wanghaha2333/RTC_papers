@@ -33,6 +33,56 @@ class FastVideoDetector:
         self.hash_threshold = hash_threshold
         self.frame_size = (64, 48)  # 极小尺寸以提高速度
     
+    def check_video_decodable(self, video_path: str) -> Tuple[bool, str]:
+        """
+        检查视频是否可以正确解码
+        
+        Returns:
+            (是否可解码, 详细信息)
+        """
+        try:
+            cap = cv2.VideoCapture(video_path)
+            if not cap.isOpened():
+                return False, "无法打开视频文件"
+            
+            # 检查基本属性
+            fps = cap.get(cv2.CAP_PROP_FPS)
+            frame_count = cap.get(cv2.CAP_PROP_FRAME_COUNT)
+            width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
+            height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+            
+            if fps <= 0 or frame_count <= 0 or width <= 0 or height <= 0:
+                cap.release()
+                return False, "视频属性异常"
+            
+            # 尝试读取前几帧来验证解码能力
+            successful_reads = 0
+            test_frames = min(10, int(frame_count))  # 测试前10帧或总帧数
+            
+            for i in range(test_frames):
+                ret, frame = cap.read()
+                if ret and frame is not None and frame.size > 0:
+                    successful_reads += 1
+                else:
+                    break
+            
+            cap.release()
+            
+            # 如果成功读取的帧数少于测试帧数的80%，认为解码有问题
+            success_rate = successful_reads / test_frames
+            if success_rate < 0.8:
+                return False, f"解码成功率低: {success_rate:.1%}"
+            
+            # 检查视频长度是否足够（至少4秒）
+            duration = frame_count / fps
+            if duration < 4.0:
+                return False, f"视频时长不足4秒: {duration:.1f}s"
+            
+            return True, f"解码正常,时长{duration:.1f}s,{fps:.1f}fps"
+            
+        except Exception as e:
+            return False, f"解码检测错误: {str(e)}"
+    
     def _compute_phash_fast(self, frame: np.ndarray) -> int:
         """超快速感知哈希计算"""
         # 直接缩放到8x8灰度图
@@ -87,17 +137,25 @@ class FastVideoDetector:
             cap.release()
 
 
-def process_video_fast(video_path: str) -> Tuple[str, bool, str]:
+def process_video_fast(video_path: str) -> Tuple[str, bool, bool, str, str]:
     """处理单个视频的快速函数"""
     detector = FastVideoDetector()
     try:
-        no_change, info = detector.detect_no_change(video_path)
-        return video_path, no_change, info
+        # 检查解码能力
+        decodable, decode_info = detector.check_video_decodable(video_path)
+        
+        # 如果可解码，检查变化
+        if decodable:
+            no_change, change_info = detector.detect_no_change(video_path)
+            has_change = not no_change
+            return video_path, decodable, has_change, decode_info, change_info
+        else:
+            return video_path, decodable, False, decode_info, "跳过检测（无法解码）"
     except Exception as e:
-        return video_path, False, f"错误: {str(e)}"
+        return video_path, False, False, f"错误: {str(e)}", "检测失败"
 
 
-def batch_process_videos(video_paths: List[str], num_processes: int = None) -> List[Tuple[str, bool, str]]:
+def batch_process_videos(video_paths: List[str], num_processes: int = None) -> List[Tuple[str, bool, bool, str, str]]:
     """批量处理视频"""
     if num_processes is None:
         num_processes = multiprocessing.cpu_count()
@@ -146,28 +204,37 @@ def main():
     end_time = time.time()
     
     # 统计结果
-    no_change_count = sum(1 for _, no_change, _ in results if no_change)
+    decodable_count = sum(1 for _, decodable, _, _, _ in results if decodable)
+    has_change_count = sum(1 for _, _, has_change, _, _ in results if has_change)
+    no_change_count = sum(1 for _, decodable, has_change, _, _ in results if decodable and not has_change)
     
     if not args.quiet:
         print(f"\n处理完成!")
         print(f"总数: {len(results)}")
+        print(f"可解码: {decodable_count}")
+        print(f"不可解码: {len(results) - decodable_count}")
+        print(f"有变化: {has_change_count}")
         print(f"无变化: {no_change_count}")
-        print(f"有变化: {len(results) - no_change_count}")
         print(f"用时: {end_time - start_time:.2f} 秒")
         print(f"速度: {len(results) / (end_time - start_time):.1f} 个/秒")
     
     # 输出结果
     if args.output:
         with open(args.output, 'w', encoding='utf-8') as f:
-            f.write("视频文件,无变化,详情\n")
-            for path, no_change, info in results:
-                f.write(f'"{path}",{no_change},"{info}"\n')
+            f.write("视频文件,可解码,有变化,解码信息,变化信息\n")
+            for path, decodable, has_change, decode_info, change_info in results:
+                f.write(f'"{path}",{decodable},{has_change},"{decode_info}","{change_info}"\n')
         if not args.quiet:
             print(f"\n结果保存至: {args.output}")
     else:
         # 直接输出到终端
-        for path, no_change, info in results:
-            status = "无变化" if no_change else "有变化"
+        for path, decodable, has_change, decode_info, change_info in results:
+            if not decodable:
+                status = "不可解码"
+            elif has_change:
+                status = "有变化"
+            else:
+                status = "无变化"
             print(f"{status}: {os.path.basename(path)}")
 
 
